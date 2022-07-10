@@ -39,11 +39,6 @@ export const GithubProvider = ({ children }) => {
   const getUser = async (login) => {
     setLoading();
 
-    const params = new URLSearchParams({
-      sort: 'created_at',
-      per_page: 10,
-    });
-
     const response = await fetch(`${GITHUB_URL}/users/${login}?{params}`, {
       headers: { Authorization: `token ${GITHUB_TOKEN}` },
     });
@@ -62,10 +57,23 @@ export const GithubProvider = ({ children }) => {
   const getUserRepos = async (login) => {
     setLoading();
 
-    const response = await fetch(`${GITHUB_URL}/users/${login}/repos`);
-    console.log(`${GITHUB_URL}/users/${login}/repos`);
+    // To load by stars the url and the search params need to change:
+    //URL: /search/repositories?${params}
+    // params: q: 'user:' +login
+    // result in: repos.data.item
+    const params = new URLSearchParams({
+      sort: 'created',
+      per_page: 10,
+    });
+
+    const response = await fetch(
+      `${GITHUB_URL}/users/${login}/repos?${params}`,
+      {
+        headers: { Authorization: `token ${GITHUB_TOKEN}` },
+      }
+    );
+
     const data = await response.json();
-    console.log(data);
 
     dispatch({
       type: 'GET_REPOS',
