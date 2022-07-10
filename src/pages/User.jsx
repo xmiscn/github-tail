@@ -3,13 +3,16 @@ import { useParams, Link } from 'react-router-dom';
 import GithubContext from '../context/github/GithubContext';
 import { FaCodepen, FaStore, FaUserFriends, FaUsers } from 'react-icons/fa';
 import Spinner from '../components/layout/Spinner';
+import RepoList from '../components/repos/RepoList';
 
 function User() {
-  const { getUser, user, isLoading } = useContext(GithubContext);
+  const { getUser, user, getUserRepos, repos, isLoading } =
+    useContext(GithubContext);
   const params = useParams();
 
   useEffect(() => {
     getUser(params.login);
+    getUserRepos(params.login);
   }, []);
 
   const {
@@ -27,6 +30,7 @@ function User() {
     public_repos,
     public_gists,
     hireable,
+    company,
   } = user;
 
   if (isLoading) {
@@ -55,7 +59,7 @@ function User() {
           <div className='col-span-2'>
             <div className='mb-6'>
               <h1 className='text-3xl card-title'>
-                {name}
+                {name}, {company}
                 <div className='ml-2 mr-1 badge badge-success'>{type}</div>
                 {hireable && (
                   <div className='mx-1 badge badge-info'>Hireable</div>
@@ -149,6 +153,7 @@ function User() {
             </div>
           </div>
         </div>
+        <RepoList repos={repos} />
       </div>
     </>
   );
